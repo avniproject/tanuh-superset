@@ -1,0 +1,56 @@
+# TEMPLATE — build the Tanuh Superset image and push it to ECR.
+#
+# This mirrors avni-infra's build-tanuh-metabase.yml. It will not run usefully until ops
+# provisions, via avni-infra#94:
+#   - the ECR repo `avniproject/tanuh-superset`
+#   - a GitHub OIDC role this repo can assume (fill AWS_ROLE_ARN below)
+# Until then it only runs on manual dispatch. Tag-triggered builds activate once the
+# placeholders are filled in.
+
+name: build-and-push
+
+on:
+  workflow_dispatch:
+  # push:
+  #   tags: ['v*']        # enable once ECR repo + OIDC role exist
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ap-south-1
+  ECR_REPO: avniproject/tanuh-superset
+  AWS_ROLE_ARN: <PROVISION-VIA-avni-infra#94>   # e.g. arn:aws:iam::<acct>:role/tanuh-superset-gha-role
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read image tag from VERSION
+        id: tag
+        run: echo "image_tag=$(cat VERSION)" >> "$GITHUB_OUTPUT"
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.ecr.outputs.registry }}/${{ env.ECR_REPO }}:${{ steps.tag.outputs.image_tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
