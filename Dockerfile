@@ -2,8 +2,13 @@
 # Adapted from Avni's existing Superset build (avni-infra/reportingSystem/superset).
 #
 # TAG = the upstream apache/superset version to brand. Pin it deliberately and re-test
-# on bump (Avni's existing Superset runs 4.0.1). Override with: make build-image TAG=<ver>
-ARG TAG=4.0.1
+# on bump (Avni's existing Superset runs 6.0.0). Override with: make build-image TAG=<ver>
+#
+# NOTE: the brand-logo config in superset_config.py uses the theme-token branding
+# (THEME_DEFAULT.token.brandLogoUrl) introduced in Superset's new theme system (5.0+).
+# It is a no-op on 4.0.1 (which brands via APP_ICON/LOGO_TARGET_PATH instead) — keep
+# TAG >= 6.0.0 or switch the config back to the 4.x branding keys.
+ARG TAG=6.0.0
 
 FROM --platform=linux/amd64 apache/superset:${TAG}
 

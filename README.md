@@ -67,7 +67,7 @@ Open http://localhost:8088 and confirm the Tanuh logo/name render on the login +
 
 ## How it ships
 
-1. Bump `VERSION` (e.g. `4.0.1-tanuh-2`) and tag the repo `v<VERSION>`.
+1. Bump `VERSION` (e.g. `6.0.0-tanuh-2`) and tag the repo `v<VERSION>`.
 2. CI builds `linux/amd64` and pushes to ECR `avniproject/tanuh-superset` (AWS account + OIDC role
    provisioned via avni-infra#94).
 3. `avni-infra` consumes the published tag and deploys the container onto the Tanuh reporting host, behind
@@ -75,8 +75,10 @@ Open http://localhost:8088 and confirm the Tanuh logo/name render on the login +
 
 ## Notes / TODO
 
-- **Pin the Superset version deliberately.** `TAG` defaults to `4.0.1` (proven in Avni's existing Superset).
-  Bump intentionally and re-test.
+- **Pin the Superset version deliberately.** `TAG` defaults to `6.0.0` (the version Avni's existing Superset
+  runs). The brand-logo config in `superset_config.py` uses the theme-token branding (`brandLogoUrl`) that
+  exists only on Superset's new theme system (5.0+); on 4.x the logo silently won't render. Bump intentionally,
+  and if you drop below 5.0 switch back to the 4.x branding keys (`APP_ICON`/`LOGO_TARGET_PATH`). Re-test on bump.
 - **Add a real favicon.** Today the PNG logo doubles as the favicon; a dedicated `.ico` renders better at
   16×16.
 - **Production server only.** The image relies on the base `apache/superset` gunicorn entrypoint — do **not**

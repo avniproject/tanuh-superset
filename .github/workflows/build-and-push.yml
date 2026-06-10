@@ -1,18 +1,15 @@
-# TEMPLATE — build the Tanuh Superset image and push it to ECR.
+# Build the Tanuh Superset image and push it to ECR.
 #
-# This mirrors avni-infra's build-tanuh-metabase.yml. It will not run usefully until ops
-# provisions, via avni-infra#94:
-#   - the ECR repo `avniproject/tanuh-superset`
-#   - a GitHub OIDC role this repo can assume (fill AWS_ROLE_ARN below)
-# Until then it only runs on manual dispatch. Tag-triggered builds activate once the
-# placeholders are filled in.
+# Mirrors avni-infra's build-tanuh-metabase.yml. Fires on a pushed `v*` tag (the
+# release path) or manual dispatch. Pushes to ECR `avniproject/tanuh-superset` via the
+# OIDC role provisioned in avni-infra#94 (reportingSystem/tanuh-superset/aws_ci_setup.sh).
 
 name: build-and-push
 
 on:
   workflow_dispatch:
-  # push:
-  #   tags: ['v*']        # enable once ECR repo + OIDC role exist
+  push:
+    tags: ['v*']
 
 permissions:
   id-token: write
@@ -21,7 +18,7 @@ permissions:
 env:
   AWS_REGION: ap-south-1
   ECR_REPO: avniproject/tanuh-superset
-  AWS_ROLE_ARN: <PROVISION-VIA-avni-infra#94>   # e.g. arn:aws:iam::<acct>:role/tanuh-superset-gha-role
+  AWS_ROLE_ARN: arn:aws:iam::118388513628:role/tanuh-superset-gha-role
 
 jobs:
   build-and-push:

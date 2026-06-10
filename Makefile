@@ -1,6 +1,6 @@
 IMAGE := avniproject/tanuh-superset
 # Upstream apache/superset version to brand. Keep in sync with the base tag in VERSION.
-TAG ?= 4.0.1
+TAG ?= 6.0.0
 
 build-image:
 	@echo "building image $(IMAGE):$(TAG)"
