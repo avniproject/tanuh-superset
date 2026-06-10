@@ -24,8 +24,10 @@ RUN apt-get update && \
         libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# pip (not `uv`) so this builds across Superset image versions
-RUN pip install --no-cache-dir psycopg2-binary Pillow
+# uv (NOT pip): the base image runs Superset from the uv venv at /app/.venv.
+# Plain `pip` installs outside that venv, so psycopg2 ImportErrors at runtime
+# ("No module named 'psycopg2'" on `superset db upgrade`). uv targets the venv.
+RUN uv pip install --no-cache psycopg2-binary Pillow
 
 USER superset
 
