@@ -42,7 +42,8 @@ database and its credentials, secrets, and the deploy itself.
 
 ## Build & run locally
 
-Prereq: Docker.
+Prereq: Docker. **On Windows?** Follow the step-by-step guide in
+[`WINDOWS_SETUP.md`](WINDOWS_SETUP.md) instead.
 
 ```bash
 make build-image                 # builds avniproject/tanuh-superset:<TAG>
